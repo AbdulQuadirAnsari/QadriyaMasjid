@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin — Qadriya Masjid</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Mukta:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF7EE; --bg-panel:#F3ECDA; --ink:#1C2B22; --ink-soft:#4B5B4F;
+  --primary:#1F4E3D; --primary-dark:#12281D; --gold:#A97A21; --gold-light:#D9B45C;
+  --line: rgba(28,43,34,0.16); --card-bg:#FFFFFF; --shadow:0 8px 24px rgba(20,30,22,0.08); --danger:#8C3B2E;
+  box-sizing:border-box; padding-top: env(safe-area-inset-top,0px); padding-bottom: env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --bg:#10180F;--bg-panel:#182A22;--ink:#EDE9DA;--ink-soft:#B9C4BB;--primary:#6FAE93;--primary-dark:#0C1712;--gold:#E3B860;--gold-light:#F1D08A;--line:rgba(237,233,218,0.16);--card-bg:#182420;--shadow:0 8px 24px rgba(0,0,0,0.35);--danger:#E08A73; }
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; background:var(--bg); }
+body{ font-family:'Mukta',-apple-system,"Segoe UI",sans-serif; color:var(--ink); }
+h1,h2{ font-family:'Amiri',Georgia,serif; margin:0; }
+.topbar{ background:var(--primary-dark); color:#F3ECDA; padding: 16px 20px; padding-top: calc(16px + env(safe-area-inset-top,0px)); display:flex; justify-content:space-between; align-items:center; }
+.topbar h1{ font-size:1.3rem; color:#F3ECDA; }
+.topbar a{ color:#D9B45C; font-size:0.85rem; text-decoration:none; }
+#logoutBtn{ background:none; border:1px solid rgba(255,255,255,0.3); color:#F3ECDA; padding:6px 14px; border-radius:20px; font-size:0.82rem; cursor:pointer; }
+.wrap{ max-width:900px; margin:0 auto; padding: 28px 20px 80px 20px; }
+
+/* login */
+.login-card{ max-width:380px; margin: 80px auto; background:var(--card-bg); border:1px solid var(--line); border-radius:16px; padding:32px; box-shadow:var(--shadow); }
+.login-card h2{ font-size:1.4rem; margin-bottom:6px; }
+.login-card p{ color:var(--ink-soft); font-size:0.88rem; margin-top:0; }
+label{ display:block; font-size:0.82rem; color:var(--ink-soft); margin: 14px 0 4px 0; }
+input[type=text], input[type=email], input[type=password], input[type=date], input[type=number], textarea{
+  width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--ink); font-size:0.92rem; font-family:inherit;
+}
+textarea{ resize:vertical; min-height:50px; }
+button.primary{ background:var(--primary); color:#fff; border:none; padding:11px 18px; border-radius:8px; font-size:0.92rem; font-weight:600; cursor:pointer; margin-top:18px; width:100%; }
+button.primary:hover{ opacity:0.92; }
+.error-msg{ color:var(--danger); font-size:0.85rem; margin-top:10px; min-height: 1.2em; }
+
+/* sections */
+.tabs{ display:flex; gap:8px; overflow-x:auto; margin-bottom:22px; border-bottom:1px solid var(--line); padding-bottom: 0; }
+.tab-btn{ background:none; border:none; padding:10px 6px; font-size:0.92rem; font-weight:600; color:var(--ink-soft); cursor:pointer; white-space:nowrap; border-bottom:2px solid transparent; }
+.tab-btn.active{ color:var(--primary); border-bottom-color:var(--gold); }
+.panel{ display:none; }
+.panel.active{ display:block; }
+.card-row{ background:var(--card-bg); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px; box-shadow:var(--shadow); position:relative; }
+.card-row .remove{ position:absolute; top:10px; right:10px; background:none; border:none; color:var(--danger); font-size:1.1rem; cursor:pointer; line-height:1; }
+.grid2{ display:grid; grid-template-columns:1fr 1fr; gap:0 14px; }
+.grid3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:0 14px; }
+@media (max-width:560px){ .grid2, .grid3{ grid-template-columns:1fr; } }
+.add-btn{ background:var(--bg-panel); border:1px dashed var(--gold); color:var(--gold); padding:10px; border-radius:10px; width:100%; cursor:pointer; font-weight:600; font-size:0.88rem; }
+.save-btn{ background:var(--primary); color:#fff; border:none; padding:12px 20px; border-radius:8px; font-weight:700; cursor:pointer; margin-top:16px; font-size:0.92rem; }
+.save-status{ font-size:0.84rem; color:var(--primary); margin-left:12px; }
+.photo-row{ display:flex; align-items:center; gap:12px; margin-top:8px; }
+.photo-thumb{ width:56px; height:56px; border-radius:50%; object-fit:cover; background:var(--bg-panel); border:1px solid var(--line); }
+.section-heading{ font-size:1.2rem; margin-bottom:16px; }
+.hint{ color:var(--ink-soft); font-size:0.8rem; margin-bottom:16px; }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="loginView" class="login-card">
+  <h2>Committee Login</h2>
+  <p>Sign in to update the Qadriya Masjid website.</p>
+  <label for="email">Email</label>
+  <input type="email" id="email" autocomplete="username">
+  <label for="password">Password</label>
+  <input type="password" id="password" autocomplete="current-password">
+  <button class="primary" id="loginBtn">Log in</button>
+  <div class="error-msg" id="loginError"></div>
+</div>
+
+<!-- ===== ADMIN AREA ===== -->
+<div id="adminView" style="display:none;">
+  <div class="topbar">
+    <h1>Qadriya Masjid — Admin</h1>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <a href="index.html" target="_blank">View site →</a>
+      <button id="logoutBtn">Log out</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="prayer">Prayer Times</button>
+      <button class="tab-btn" data-tab="committee">Committee</button>
+      <button class="tab-btn" data-tab="events">Events</button>
+      <button class="tab-btn" data-tab="obituaries">Death Notices</button>
+      <button class="tab-btn" data-tab="finance">Collection &amp; Expenses</button>
+    </div>
+
+    <!-- PRAYER TIMES -->
+    <div class="panel active" id="panel-prayer">
+      <div class="section-heading">Prayer Times</div>
+      <div id="prayerRows"></div>
+      <label>Jumu'ah Khutbah time</label>
+      <input type="text" id="jummahKhutbah" placeholder="e.g. 1:15 PM">
+      <label>Jumu'ah Namaz time</label>
+      <input type="text" id="jummahNamaz" placeholder="e.g. 1:30 PM">
+      <button class="save-btn" onclick="savePrayer()">Save prayer times</button>
+      <span class="save-status" id="status-prayer"></span>
+    </div>
+
+    <!-- COMMITTEE -->
+    <div class="panel" id="panel-committee">
+      <div class="section-heading">Managing Committee</div>
+      <div id="committeeRows"></div>
+      <button class="add-btn" onclick="addCommittee()">+ Add committee member</button>
+      <button class="save-btn" onclick="saveCommittee()">Save committee</button>
+      <span class="save-status" id="status-committee"></span>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="panel" id="panel-events">
+      <div class="section-heading">Events &amp; Programmes</div>
+      <div id="eventsRows"></div>
+      <button class="add-btn" onclick="addEvent()">+ Add event</button>
+      <button class="save-btn" onclick="saveEvents()">Save events</button>
+      <span class="save-status" id="status-events"></span>
+    </div>
+
+    <!-- OBITUARIES -->
+    <div class="panel" id="panel-obituaries">
+      <div class="section-heading">Death Notices (Intiqal)</div>
+      <div class="hint">A notice is highlighted automatically on the site when its date matches today.</div>
+      <div id="obitRows"></div>
+      <button class="add-btn" onclick="addObit()">+ Add death notice</button>
+      <button class="save-btn" onclick="saveObits()">Save death notices</button>
+      <span class="save-status" id="status-obituaries"></span>
+    </div>
+
+    <!-- FINANCE -->
+    <div class="panel" id="panel-finance">
+      <div class="section-heading">Collection</div>
+      <div id="collectionRows"></div>
+      <button class="add-btn" onclick="addCollection()">+ Add collection entry</button>
+      <div class="section-heading" style="margin-top:28px;">Expenses</div>
+      <div id="expenseRows"></div>
+      <button class="add-btn" onclick="addExpense()">+ Add expense entry</button>
+      <button class="save-btn" onclick="saveFinance()">Save collection &amp; expenses</button>
+      <span class="save-status" id="status-finance"></span>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+<script src="firebase-config.js"></script>
+
+<script>
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+const docRef = db.collection("site").doc("content");
+
+let data = { salahTimes:[], jummahKhutbah:"", jummahNamaz:"", committee:[], events:[], obituaries:[], collections:[], expenses:[] };
+
+// ---------- AUTH ----------
+document.getElementById("loginBtn").onclick = () => {
+  const email = document.getElementById("email").value.trim();
+  const pass = document.getElementById("password").value;
+  document.getElementById("loginError").textContent = "";
+  auth.signInWithEmailAndPassword(email, pass).catch(err => {
+    document.getElementById("loginError").textContent = err.message;
+  });
+};
+document.getElementById("logoutBtn").onclick = () => auth.signOut();
+
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    document.getElementById("loginView").style.display = "none";
+    document.getElementById("adminView").style.display = "block";
+    const snap = await docRef.get();
+    if (snap.exists) data = Object.assign(data, snap.data());
+    if (!data.salahTimes || data.salahTimes.length === 0) {
+      data.salahTimes = [
+        { name:"Fajr", azaan:"", jamaat:"" },
+        { name:"Zuhr", azaan:"", jamaat:"" },
+        { name:"Asr", azaan:"", jamaat:"" },
+        { name:"Maghrib", azaan:"", jamaat:"" },
+        { name:"Isha", azaan:"", jamaat:"" }
+      ];
+    }
+    renderPrayer(); renderCommittee(); renderEvents(); renderObits(); renderFinance();
+  } else {
+    document.getElementById("loginView").style.display = "block";
+    document.getElementById("adminView").style.display = "none";
+  }
+});
+
+// ---------- TABS ----------
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("panel-" + btn.dataset.tab).classList.add("active");
+  };
+});
+
+function flash(id){
+  const el = document.getElementById(id);
+  el.textContent = "Saved ✓";
+  setTimeout(() => el.textContent = "", 2500);
+}
+
+// ---------- PRAYER TIMES ----------
+function renderPrayer(){
+  document.getElementById("prayerRows").innerHTML = data.salahTimes.map((p,i) => `
+    <div class="card-row">
+      <div class="grid3">
+        <div><label>Namaz</label><input type="text" value="${p.name}" onchange="data.salahTimes[${i}].name=this.value"></div>
+        <div><label>Azaan time</label><input type="text" value="${p.azaan}" onchange="data.salahTimes[${i}].azaan=this.value"></div>
+        <div><label>Jama'at time</label><input type="text" value="${p.jamaat}" onchange="data.salahTimes[${i}].jamaat=this.value"></div>
+      </div>
+    </div>`).join("");
+  document.getElementById("jummahKhutbah").value = data.jummahKhutbah || "";
+  document.getElementById("jummahNamaz").value = data.jummahNamaz || "";
+}
+function savePrayer(){
+  data.jummahKhutbah = document.getElementById("jummahKhutbah").value;
+  data.jummahNamaz = document.getElementById("jummahNamaz").value;
+  docRef.set({ salahTimes: data.salahTimes, jummahKhutbah: data.jummahKhutbah, jummahNamaz: data.jummahNamaz }, { merge:true })
+    .then(() => flash("status-prayer"));
+}
+
+// ---------- COMMITTEE ----------
+function renderCommittee(){
+  document.getElementById("committeeRows").innerHTML = data.committee.map((m,i) => `
+    <div class="card-row">
+      <button class="remove" onclick="data.committee.splice(${i},1); renderCommittee();">✕</button>
+      <div class="grid2">
+        <div><label>Name</label><input type="text" value="${m.name||""}" onchange="data.committee[${i}].name=this.value"></div>
+        <div><label>Role</label><input type="text" value="${m.role||""}" onchange="data.committee[${i}].role=this.value"></div>
+      </div>
+      <div class="photo-row">
+        <img class="photo-thumb" src="${m.photoUrl||""}" onerror="this.style.visibility='hidden'">
+        <input type="file" accept="image/*" onchange="uploadPhoto(this.files[0], 'committee', ${i})">
+      </div>
+    </div>`).join("");
+}
+function addCommittee(){ data.committee.push({name:"",role:"",photoUrl:""}); renderCommittee(); }
+function saveCommittee(){ docRef.set({ committee: data.committee }, { merge:true }).then(() => flash("status-committee")); }
+
+// ---------- EVENTS ----------
+function renderEvents(){
+  document.getElementById("eventsRows").innerHTML = data.events.map((e,i) => `
+    <div class="card-row">
+      <button class="remove" onclick="data.events.splice(${i},1); renderEvents();">✕</button>
+      <div class="grid2">
+        <div><label>Title</label><input type="text" value="${e.title||""}" onchange="data.events[${i}].title=this.value"></div>
+        <div><label>Date (or "Every Sunday" etc.)</label><input type="text" value="${e.date||""}" onchange="data.events[${i}].date=this.value"></div>
+      </div>
+      <label>Description</label>
+      <textarea onchange="data.events[${i}].desc=this.value">${e.desc||""}</textarea>
+      <div class="photo-row">
+        <img class="photo-thumb" style="border-radius:8px;" src="${e.photoUrl||""}" onerror="this.style.visibility='hidden'">
+        <input type="file" accept="image/*" onchange="uploadPhoto(this.files[0], 'events', ${i})">
+      </div>
+    </div>`).join("");
+}
+function addEvent(){ data.events.push({title:"",date:"",desc:"",photoUrl:""}); renderEvents(); }
+function saveEvents(){ docRef.set({ events: data.events }, { merge:true }).then(() => flash("status-events")); }
+
+// ---------- OBITUARIES ----------
+function renderObits(){
+  document.getElementById("obitRows").innerHTML = data.obituaries.map((o,i) => `
+    <div class="card-row">
+      <button class="remove" onclick="data.obituaries.splice(${i},1); renderObits();">✕</button>
+      <div class="grid3">
+        <div><label>Name</label><input type="text" value="${o.name||""}" onchange="data.obituaries[${i}].name=this.value"></div>
+        <div><label>Age</label><input type="number" value="${o.age||""}" onchange="data.obituaries[${i}].age=this.value"></div>
+        <div><label>Date of demise</label><input type="date" value="${o.date||""}" onchange="data.obituaries[${i}].date=this.value"></div>
+      </div>
+      <div class="grid3">
+        <div><label>Janaza time</label><input type="text" value="${o.janazaTime||""}" onchange="data.obituaries[${i}].janazaTime=this.value"></div>
+        <div><label>Janaza place</label><input type="text" value="${o.janazaPlace||""}" onchange="data.obituaries[${i}].janazaPlace=this.value"></div>
+        <div><label>Burial (Qabristan)</label><input type="text" value="${o.buriedAt||""}" onchange="data.obituaries[${i}].buriedAt=this.value"></div>
+      </div>
+    </div>`).join("");
+}
+function addObit(){ data.obituaries.push({name:"",age:"",date:"",janazaTime:"",janazaPlace:"",buriedAt:""}); renderObits(); }
+function saveObits(){ docRef.set({ obituaries: data.obituaries }, { merge:true }).then(() => flash("status-obituaries")); }
+
+// ---------- FINANCE ----------
+function renderFinance(){
+  document.getElementById("collectionRows").innerHTML = data.collections.map((c,i) => `
+    <div class="card-row">
+      <button class="remove" onclick="data.collections.splice(${i},1); renderFinance();">✕</button>
+      <div class="grid3">
+        <div><label>Date</label><input type="date" value="${c.date||""}" onchange="data.collections[${i}].date=this.value"></div>
+        <div><label>Details</label><input type="text" value="${c.details||""}" onchange="data.collections[${i}].details=this.value"></div>
+        <div><label>Amount (₹)</label><input type="number" value="${c.amount||""}" onchange="data.collections[${i}].amount=Number(this.value)"></div>
+      </div>
+    </div>`).join("");
+  document.getElementById("expenseRows").innerHTML = data.expenses.map((e,i) => `
+    <div class="card-row">
+      <button class="remove" onclick="data.expenses.splice(${i},1); renderFinance();">✕</button>
+      <div class="grid3">
+        <div><label>Date</label><input type="date" value="${e.date||""}" onchange="data.expenses[${i}].date=this.value"></div>
+        <div><label>Details</label><input type="text" value="${e.details||""}" onchange="data.expenses[${i}].details=this.value"></div>
+        <div><label>Amount (₹)</label><input type="number" value="${e.amount||""}" onchange="data.expenses[${i}].amount=Number(this.value)"></div>
+      </div>
+    </div>`).join("");
+}
+function addCollection(){ data.collections.push({date:"",details:"",amount:0}); renderFinance(); }
+function addExpense(){ data.expenses.push({date:"",details:"",amount:0}); renderFinance(); }
+function saveFinance(){ docRef.set({ collections: data.collections, expenses: data.expenses }, { merge:true }).then(() => flash("status-finance")); }
+
+// ---------- PHOTO UPLOAD ----------
+function uploadPhoto(file, kind, index){
+  if(!file) return;
+  const path = `${kind}/${Date.now()}_${file.name}`;
+  const ref = storage.ref(path);
+  ref.put(file).then(() => ref.getDownloadURL()).then(url => {
+    if(kind === "committee"){ data.committee[index].photoUrl = url; renderCommittee(); }
+    else { data.events[index].photoUrl = url; renderEvents(); }
+  }).catch(err => alert("Upload failed: " + err.message));
+}
+</script>
+</body>
+</html>
